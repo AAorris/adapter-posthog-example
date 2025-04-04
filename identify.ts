@@ -1,6 +1,6 @@
 import { dedupe } from "flags/next";
 import { cookies, headers } from "next/headers";
-import type { PostHogEntities } from "@flags-sdk/adapter-posthog";
+import type { PostHogEntities } from "@flags-sdk/posthog";
 
 /**
  * Get info used by postHog

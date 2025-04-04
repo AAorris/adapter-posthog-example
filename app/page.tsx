@@ -1,4 +1,3 @@
-import { FlagValues } from "flags/react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -8,18 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  demoCtaExperiment,
-  demoCtaFlag,
-  myFlag,
-  showTestBanner,
-  myFlagVariant,
-} from "@/flags";
-import { Code, Flag, Zap } from "lucide-react";
+import { demoCtaFlag, showTestBanner } from "@/flags";
+import { Flag, Zap } from "lucide-react";
 import { Login } from "./components/login";
 import { TabNavigation } from "./components/product-tabs";
 import { ThemedButton } from "./components/themed-button";
-import { Suspense } from "react";
+import { FlagValues } from "flags/react";
 
 export default async function Home({
   searchParams,
@@ -27,7 +20,10 @@ export default async function Home({
   searchParams: Promise<{ tab?: string }>;
 }) {
   const { tab } = await searchParams;
-  const showTestBannerValue = await showTestBanner();
+  const [showTestBannerValue, demoCtaFlagValue] = await Promise.all([
+    showTestBanner(),
+    demoCtaFlag(),
+  ]);
   return (
     <div>
       {showTestBannerValue ? (
@@ -53,14 +49,10 @@ export default async function Home({
           <LoginSection />
 
           <TabNavigation initialTab={tab ?? "feature"}>
-            <TabsList className="grid grid-cols-3">
+            <TabsList className="grid grid-cols-2">
               <TabsTrigger data-attr="is-feature-enabled" value="feature">
                 <Flag className="h-4 w-4 mr-2" />
                 isFeatureEnabled
-              </TabsTrigger>
-              <TabsTrigger data-attr="feature-flag-value" value="variant">
-                <Code className="h-4 w-4 mr-2" />
-                featureFlagValue
               </TabsTrigger>
               <TabsTrigger data-attr="feature-flag-payload" value="payload">
                 <Zap className="h-4 w-4 mr-2" />
@@ -70,17 +62,9 @@ export default async function Home({
 
             <TabsContent value="feature" className="mt-0">
               <FlagSection
-                flag={myFlag}
+                flag={showTestBanner}
                 title="isFeatureEnabled"
-                description="Check if a feature is enabled"
-              />
-            </TabsContent>
-
-            <TabsContent value="variant" className="mt-0">
-              <FlagSection
-                flag={myFlagVariant}
-                title="featureVariant"
-                description="Get the active variant for a feature"
+                description="Check if a feature is enabled (Shows a banner)"
               />
             </TabsContent>
 
@@ -94,20 +78,13 @@ export default async function Home({
           </TabNavigation>
           <CTASection />
         </div>
-        <Suspense fallback={<div key="flagValues" />}>
-          <div key="flagValues">
-            <FlagValues
-              values={{
-                [myFlag.key]: await myFlag(),
-                [myFlagVariant.key]: await myFlagVariant(),
-                [showTestBanner.key]: await showTestBanner(),
-                [demoCtaFlag.key]: await demoCtaFlag(),
-                [demoCtaExperiment.key]: await demoCtaExperiment(),
-              }}
-            />
-          </div>
-        </Suspense>
       </main>
+      <FlagValues
+        values={{
+          [demoCtaFlag.key]: demoCtaFlagValue,
+          [showTestBanner.key]: showTestBannerValue,
+        }}
+      />
     </div>
   );
 }
@@ -119,7 +96,7 @@ async function FlagSection({
 }: {
   title: string;
   description: string;
-  flag: () => Promise<unknown>;
+  flag: { (): Promise<unknown>; key: string };
 }) {
   const value = await flag();
 
@@ -134,6 +111,7 @@ async function FlagSection({
           <code className="text-sm">{JSON.stringify(value, null, 2)}</code>
         </pre>
       </CardContent>
+      <FlagValues values={{ [flag.key]: value }} />
     </Card>
   );
 }

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { Input } from "@/components/ui/input";
 import { ThemedButton } from "./themed-button";
-import { postHogAdapter } from "@flags-sdk/adapter-posthog";
+import { postHogAdapter } from "@flags-sdk/posthog";
 
 export async function Login() {
   const cookieStore = await cookies();
