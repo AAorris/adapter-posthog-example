@@ -20,3 +20,22 @@ See `.env.example` for the required environment variables.
 ### Flags SDK usage
 
 See `flags.ts` to understand how the PostHog adapter is used with the Flags SDK.
+
+### Deploy to Vercel
+
+```bash
+# If you imported the project from Github to Vercel
+vercel link
+
+# If you have environment variables in Vercel, pull them down
+vercel env pull
+
+# Develop using your project settings
+vercel dev
+
+# Build locally (Since we are using linked packages)
+vercel --prod
+
+# Deploy to vercel
+vercel deploy --prebuilt
+```

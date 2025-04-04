@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { PostHogProvider } from "./components/posthog-provider";
+import { VercelToolbar } from "@vercel/toolbar/next";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,7 +29,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <PostHogProvider>{children}</PostHogProvider>
+        <VercelToolbar />
       </body>
     </html>
   );
